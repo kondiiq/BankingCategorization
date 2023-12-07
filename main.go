@@ -1,6 +1,7 @@
 package main
 
 import (
+	"banplication/db"
 	"banplication/srv/handlers"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -11,24 +12,30 @@ import (
 )
 
 func main() {
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error loading .env file %s", err)
 	}
 
-	oRouter := gin.Default()
-	oReceipt := oRouter.Group("/Receipt")
-	oReceipt.GET("", handlers.GetReceipts)
-	oReceipt.GET(":id", handlers.GetReceiptByID)
-	oReceipt.POST("", handlers.CreateReceipts)
-	oReceipt.PATCH(":id", handlers.UpdateReceipts)
-	oReceipt.DELETE(":id", handlers.DeleteReceipts)
+	Router := gin.Default()
+	receiptRoute := Router.Group("/Receipt")
+	receiptRoute.GET("", handlers.GetReceipts)
+	receiptRoute.GET(":id", handlers.GetReceiptByID)
+	receiptRoute.POST("", handlers.CreateReceipts)
+	receiptRoute.PATCH(":id", handlers.UpdateReceipts)
+	receiptRoute.DELETE(":id", handlers.DeleteReceipts)
 
-	oServerConfig := &http.Server{
+	db.Connect()
+
+	serverConfig := &http.Server{
 		Addr:         os.Getenv("SERVER_PORT"),
-		Handler:      oRouter,
+		Handler:      Router,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
-	oServerConfig.ListenAndServe()
+	errSrvConfig := serverConfig.ListenAndServe()
+	if errSrvConfig != nil {
+		panic(errSrvConfig)
+	}
 }

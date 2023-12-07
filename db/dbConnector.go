@@ -2,17 +2,44 @@ package db
 
 import (
 	"banplication/model"
+	"fmt"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"os"
+	"strconv"
 )
 
-var DB *gorm.DB
+var _ *gorm.DB
+
+func loadCredentials() {
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
+		return
+	}
+	fmt.Println("Successfully loaded .env file")
+}
 
 func Connect() {
-	db, err := gorm.Open(postgres.Open(""), &gorm.Config{})
+	loadCredentials()
+	host := os.Getenv("HOST_NAME")
+	port, _ := strconv.Atoi(os.Getenv("DB_PORT"))
+	user := os.Getenv("user")
+	dbname := os.Getenv("dbname")
+	passwd := os.Getenv("DB_PASSWD")
+	sslMode := os.Getenv("SSL_MODE")
+	dsn := fmt.Sprintf("host=%s port=%d user=%s dbname=%s password=%s sslmode=%s",
+		host, port, user, dbname, passwd, sslMode)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
-	db.AutoMigrate(&model.Receipt{})
-	DB = db
+
+	aMigrationErr := db.AutoMigrate(&model.Receipt{})
+	if aMigrationErr != nil {
+		panic(aMigrationErr)
+	}
+
+	_ = db
 }

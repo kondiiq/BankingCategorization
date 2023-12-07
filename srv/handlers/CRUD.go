@@ -35,7 +35,8 @@ func GetReceiptByID(c *gin.Context) {
 		}
 	}
 	c.JSON(http.StatusNotFound, gin.H{
-		"message": "Not founded",
+		"code":    404,
+		"message": "Not found",
 	})
 	return
 }
@@ -43,6 +44,7 @@ func GetReceiptByID(c *gin.Context) {
 func CreateReceipts(c *gin.Context) {
 	var newReceipt model.Receipt
 	if err := c.BindJSON(&newReceipt); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, err)
 		return
 	}
 	receipts = append(receipts, newReceipt)
@@ -50,27 +52,28 @@ func CreateReceipts(c *gin.Context) {
 }
 
 func UpdateReceipts(c *gin.Context) {
-	var newReceipt model.Receipt
-	if err := c.BindJSON(&newReceipt); err != nil {
+	id := c.Param("id")
+	var updateBody model.Receipt
+	if err := c.BindJSON(&updateBody); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, err)
 		return
 	}
-	id := c.Param("id")
+
 	for _, idx := range receipts {
 		if idx.ID == id {
-			idx.Sum = newReceipt.Sum
-			idx.Address = newReceipt.Address
-			idx.Currency = newReceipt.Currency
-			idx.PaymentType = newReceipt.PaymentType
-			idx.TransactionDate = newReceipt.TransactionDate
-			idx.UpdatedAt = newReceipt.UpdatedAt
-			c.IndentedJSON(http.StatusOK, newReceipt)
+			idx.Sum = updateBody.Sum
+			idx.Address = updateBody.Address
+			idx.PaymentType = updateBody.PaymentType
+			idx.TransactionDate = updateBody.TransactionDate
+			idx.Currency = updateBody.Currency
+			c.JSON(http.StatusOK, &updateBody)
 			return
 		}
 	}
-	c.JSON(http.StatusNotFound, gin.H{
-		"message": "Not founded",
+	c.IndentedJSON(http.StatusNotFound, gin.H{
+		"code":    404,
+		"message": "Not found",
 	})
-	return
 }
 
 func DeleteReceipts(c *gin.Context) {

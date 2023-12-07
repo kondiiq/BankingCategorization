@@ -12,7 +12,6 @@ type Receipt struct {
 	Address         string    `json:"address" binding:"required"`
 	PaymentType     string    `json:"paymentType" binding:"required"`
 	TransactionDate time.Time `json:"transaction_date"`
-	createdAt       time.Time `json:"created_at"`
 	Currency        string    `json:"currency" binding:"max=3" binding:"required"`
 }
 
