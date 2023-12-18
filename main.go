@@ -16,7 +16,10 @@ func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error loading .env file %s", err)
+		panic(err)
 	}
+
+	db.Connect()
 
 	Router := gin.Default()
 	receiptRoute := Router.Group("/Receipt")
@@ -25,8 +28,6 @@ func main() {
 	receiptRoute.POST("", handlers.CreateReceipts)
 	receiptRoute.PATCH(":id", handlers.UpdateReceipts)
 	receiptRoute.DELETE(":id", handlers.DeleteReceipts)
-
-	db.Connect()
 
 	serverConfig := &http.Server{
 		Addr:         os.Getenv("SERVER_PORT"),

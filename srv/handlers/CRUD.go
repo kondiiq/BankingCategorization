@@ -3,6 +3,7 @@ package handlers
 import (
 	"banplication/model"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 )
@@ -18,6 +19,10 @@ var receipts = []model.Receipt{
 	{ID: "8", Sum: 37.12, Address: "Represent street 215, London, Great Britain", PaymentType: "Cash", Currency: "GBF"},
 	{ID: "9", Sum: 12.37, Address: "Represent street 215, London, Great Britain", PaymentType: "Cash", Currency: "GBF"},
 	{ID: "10", Sum: 13.27, Address: "Represent street 215, London, Great Britain", PaymentType: "Cash", Currency: "GBF"},
+}
+
+type dbController struct {
+	DB *gorm.DB
 }
 
 func GetReceipts(c *gin.Context) {

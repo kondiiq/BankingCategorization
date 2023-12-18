@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-var _ *gorm.DB
+var DB *gorm.DB
 
 func loadCredentials() {
 	err := godotenv.Load()
@@ -41,5 +41,5 @@ func Connect() {
 		panic(aMigrationErr)
 	}
 
-	_ = db
+	DB = db
 }
