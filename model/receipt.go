@@ -15,6 +15,13 @@ type Receipt struct {
 	Currency        string    `json:"currency" binding:"max=3" binding:"required"`
 }
 
+type Currency struct {
+	ID         string `json:"ID" binding:"required, max=3"`
+	Name       string `json:"name" binding:"required"`
+	Country    string `json:"country" binding:"required"`
+	ContryCode string `json:"contryCode" binding:"max=3"`
+}
+
 //var receipts = []receipt{
 
 //}
